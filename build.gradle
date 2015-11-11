@@ -1,5 +1,4 @@
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 group = 'net.errbuddy.plugins'
@@ -42,69 +41,6 @@ dependencies {
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
-apply plugin: 'com.jfrog.bintray'
-
-def bintrayUser = project.hasProperty('bintray_user') ? bintray_user : 'default'
-def bintrayKey = project.hasProperty('bintray_key') ? bintray_key : 'default'
-
-bintray {
-    user = bintrayUser
-    key = bintrayKey
-    publications = ['maven']
-    publish = true
-    pkg {
-        repo = 'plugins'
-        name = 'babel-asset-pipeline'
-        userOrg = 'errbuddy'
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId 'babel-asset-pipeline'
-            pom.withXml {
-                asNode().children().last() + {
-                    resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'babel-asset-pipeline'
-                    description 'Provides server side jsx compilation for the Asset-Pipeline library.'
-                    url 'https://github.com/peh/babel-asset-pipeline'
-                    scm {
-                        url 'https://github.com/peh/babel-asset-pipeline'
-                        connection 'scm:https://peh@github.com/peh/babel-asset-pipeline.git'
-                        developerConnection 'scm:git://github.com/peh/babel-asset-pipeline.git'
-                    }
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/license/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'peh'
-                            name 'Philipp Eschenbach'
-                            email 'philipp@errbuddy.net'
-                        }
-                    }
-                }
-            }
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "file:///Users/philipp/Workspace/errbuddy-plugins")
-        }
-    }
-}
-
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from 'build/docs/javadoc'
@@ -127,4 +63,3 @@ test {
     }
 }
 
-uploadArchives.dependsOn build, sourcesJar, javadocJar
